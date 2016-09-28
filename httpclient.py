@@ -23,6 +23,7 @@ import socket
 import re
 # you may use urllib to encode data appropriately
 import urllib
+from urlparse import urlparse
 
 def help():
     print "httpclient.py [GET/POST] [URL]\n"
@@ -36,22 +37,34 @@ class HTTPClient(object):
     #def get_host_port(self,url):
 
     def connect(self, host, port):
+        if port is None:
+            port = 8080
+        print "Connecting to" , host , "on" , port
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((host,port))
         # use sockets!
-        return None
+        return client
 
+    # TODO: parse out the http code from data
     def get_code(self, data):
+        print "GET code from:",data
         return None
 
+    # TODO: parse out headers from data
     def get_headers(self,data):
+        print "GET headers from:",data
         return None
 
+    # TODO: parse out the body from data
     def get_body(self, data):
+        print "GET body from:",data
         return None
 
     # read everything from the socket
     def recvall(self, sock):
         buffer = bytearray()
         done = False
+        print "Receiving"
         while not done:
             part = sock.recv(1024)
             if (part):
@@ -61,13 +74,73 @@ class HTTPClient(object):
         return str(buffer)
 
     def GET(self, url, args=None):
+        print "Full url:", url
         code = 500
         body = ""
+        # TODO: Add a try/except for invalid urls
+
+        parsedurl = urlparse(url)
+
+        if parsedurl.hostname:
+            # case: http://www.google.ca/
+            hostname = parsedurl.hostname
+        else:
+            # case: www.google.ca
+            hostname = parsedurl.path
+
+        print "HOSTNAME:", hostname
+
+        client = self.connect(hostname,parsedurl.port)
+
+
+        http_request = 'GET '+ url +' HTTP/1.0\r\n\r\n'
+        http_request += 'Host:' + hostname
+        # TODO: Add other headers to http_request here
+        http_request += '\r\n'
+
+
+        client.sendall(http)
+        # theoretically, these lines will work once the headers are right
+        msg = self.recvall(client)
+        code = self.get_code(msg)
+        body = self.get_body(msg)
+        headers = self.get_headers(msg) 
+
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
         code = 500
         body = ""
+        # TODO: Add a try/except for invalid urls
+
+        parsedurl = urlparse(url)
+
+        if parsedurl.hostname:
+            # case: http://www.google.ca/
+            hostname = parsedurl.hostname
+        else:
+            # case: www.google.ca
+            hostname = parsedurl.path
+
+        print "HOSTNAME:", hostname
+
+        client = self.connect(hostname,parsedurl.port)
+
+        # TODO: figure out args for POST
+
+        http_request = 'POST '+ url +' HTTP/1.0\r\n\r\n'
+        http_request += 'Host:' + hostname
+        # TODO: Add other headers to http_request here
+        http_request += '\r\n'
+
+
+        client.sendall(http)
+        # theoretically, these lines will work once the headers are right
+        msg = self.recvall(client)
+        code = self.get_code(msg)
+        body = self.get_body(msg)
+        headers = self.get_headers(msg) 
+
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
@@ -80,9 +153,30 @@ if __name__ == "__main__":
     client = HTTPClient()
     command = "GET"
     if (len(sys.argv) <= 1):
+        # if you run python httpclient.py
         help()
         sys.exit(1)
     elif (len(sys.argv) == 3):
+        # if you run python httpclient.py POST/GET www.url.com
         print client.command( sys.argv[2], sys.argv[1] )
+    elif (len(sys.argv) == 4):
+        # if you run python httpclient.py POST/GET www.url.com "param1=value1&param2=value2"
+        print "NOT IMPLEMENTED YET"
+        sys.exit(1)
+
+        """
+        Might not be necessary -- not in freetests.py
+        TODO:
+            from:
+                "param1=value1&param2=value2"
+            to:
+                {
+                    "param1" : value1,
+                    "param2" : value2
+                }
+        """
+        args = makeJSON(sys.argv[3])
+        print client.command( sys.argv[2], sys.argv[1], args)
     else:
-        print client.command( sys.argv[1] )   
+        # if you run python httpclient.py www.url.com
+        print client.command( sys.argv[1] )  
