@@ -164,24 +164,6 @@ if __name__ == "__main__":
         print ("ELIF ELIF ELIF")
         # if you run python httpclient.py POST/GET www.url.com
         print client.command( sys.argv[2], sys.argv[1] )
-    elif (len(sys.argv) == 4):
-        # if you run python httpclient.py POST/GET www.url.com "param1=value1&param2=value2"
-        print "NOT IMPLEMENTED YET"
-        sys.exit(1)
-
-        """
-        Might not be necessary -- not in freetests.py
-        TODO:
-            from:
-                "param1=value1&param2=value2"
-            to:
-                {
-                    "param1" : value1,
-                    "param2" : value2
-                }
-        """
-        args = makeJSON(sys.argv[3])
-        print client.command( sys.argv[2], sys.argv[1], args)
     else:
         print("ELSE ELSE ELSE")
         # if you run python httpclient.py www.url.com
