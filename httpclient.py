@@ -53,7 +53,23 @@ class HTTPClient(object):
    
     # TODO: parse out headers from data
     def get_headers(self,data):
-        print "GET headers from:",data
+        # print "GET headers from:"
+        # print data
+        # print "That was data"
+
+        # splitdata = data.split ('\r\n\r\n')
+
+        # for data in splitdata: 
+        #     print (data +'\n')
+        # #directory = splitdata[]
+        # #hostname = 
+        # header = "GET" + directory +'HTTP/1.1\r\n' +'Host: '+ hostname +'\r\n'
+        # header += 'Accept: */*\r\n' +'Connection: close\r\n'+'\r\n'
+
+        # # directory = 
+        # # hostname = 
+
+        # header = data.split ("\r\n\r\n",1)[0]
         return None
 
     # TODO: parse out the body from data
@@ -98,6 +114,8 @@ class HTTPClient(object):
 
         http_request = 'GET '+ url +' HTTP/1.0\r\n\r\n'
         http_request += 'Host:' + hostname
+        http_request += 'Accept: */*\r\n'
+        http_request += '\r\n'
         # TODO: Add other headers to http_request here
         http_request += '\r\n'
 
@@ -133,16 +151,16 @@ class HTTPClient(object):
 
         http_request = 'POST '+ url +' HTTP/1.0\r\n\r\n'
         http_request += 'Host:' + hostname
-        # TODO: Add other headers to http_request here
+        http_request += 'Accept: */*\r\n'
         http_request += '\r\n'
-
-
+        # TODO: Add other headers to http_request here
+     
         client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
-        code = self.get_code(msg)
-        body = self.get_body(msg)
-        headers = self.get_headers(msg) 
+        #code = self.get_code(msg)
+        #body = self.get_body(msg)
+        #headers = self.get_headers(msg) 
 
         return HTTPResponse(code, body)
 
