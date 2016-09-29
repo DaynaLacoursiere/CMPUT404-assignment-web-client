@@ -48,8 +48,9 @@ class HTTPClient(object):
     # TODO: parse out the http code from data
     def get_code(self, data):
         print "GET code from:",data
-        return None
-
+        code = data.split(' ')[1]
+        return code
+   
     # TODO: parse out headers from data
     def get_headers(self,data):
         print "GET headers from:",data
@@ -57,8 +58,10 @@ class HTTPClient(object):
 
     # TODO: parse out the body from data
     def get_body(self, data):
-        print "GET body from:",data
-        return None
+        print "GET body from:", data
+        body = data.split ("\r\n\r\n",1)[1]
+        print body
+        return body
 
     # read everything from the socket
     def recvall(self, sock):
@@ -99,7 +102,7 @@ class HTTPClient(object):
         http_request += '\r\n'
 
 
-        client.sendall(http)
+        client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
         code = self.get_code(msg)
@@ -134,7 +137,7 @@ class HTTPClient(object):
         http_request += '\r\n'
 
 
-        client.sendall(http)
+        client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
         code = self.get_code(msg)
