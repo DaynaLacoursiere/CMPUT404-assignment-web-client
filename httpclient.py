@@ -38,16 +38,13 @@ class HTTPClient(object):
 
     def connect(self, host, port):
         if port is None:
-            port = 8080
-        print "Connecting to" , host , "on" , port
+            port = 80
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect((host,port))
         # use sockets!
         return client
 
-    # TODO: parse out the http code from data
     def get_code(self, data):
-        print "GET code from:",data
         code = data.split(' ')[1]
         return code
    
@@ -72,18 +69,14 @@ class HTTPClient(object):
         # header = data.split ("\r\n\r\n",1)[0]
         return None
 
-    # TODO: parse out the body from data
     def get_body(self, data):
-        print "GET body from:", data
         body = data.split ("\r\n\r\n",1)[1]
-        print body
         return body
 
     # read everything from the socket
     def recvall(self, sock):
         buffer = bytearray()
         done = False
-        print "Receiving"
         while not done:
             part = sock.recv(1024)
             if (part):
@@ -93,7 +86,6 @@ class HTTPClient(object):
         return str(buffer)
 
     def GET(self, url, args=None):
-        print "Full url:", url
         code = 500
         body = ""
         # TODO: Add a try/except for invalid urls
@@ -107,25 +99,21 @@ class HTTPClient(object):
             # case: www.google.ca
             hostname = parsedurl.path
 
-        print "HOSTNAME:", hostname
 
         client = self.connect(hostname,parsedurl.port)
 
-
         http_request = 'GET '+ url +' HTTP/1.0\r\n\r\n'
-        http_request += 'Host:' + hostname
+        http_request += 'Host:' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
+        http_request += 'Connection: Close\r\n'
         http_request += '\r\n'
-        # TODO: Add other headers to http_request here
-        http_request += '\r\n'
-
 
         client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
         code = self.get_code(msg)
         body = self.get_body(msg)
-        headers = self.get_headers(msg) 
+        # headers = self.get_headers(msg) 
 
         return HTTPResponse(code, body)
 
@@ -143,23 +131,21 @@ class HTTPClient(object):
             # case: www.google.ca
             hostname = parsedurl.path
 
-        print "HOSTNAME:", hostname
 
         client = self.connect(hostname,parsedurl.port)
 
         # TODO: figure out args for POST
 
         http_request = 'POST '+ url +' HTTP/1.0\r\n\r\n'
-        http_request += 'Host:' + hostname
+        http_request += 'Host:' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
         http_request += '\r\n'
-        # TODO: Add other headers to http_request here
      
         client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
-        #code = self.get_code(msg)
-        #body = self.get_body(msg)
+        code = self.get_code(msg)
+        body = self.get_body(msg)
         #headers = self.get_headers(msg) 
 
         return HTTPResponse(code, body)
