@@ -45,12 +45,9 @@ class HTTPClient(object):
         return client
 
     def get_code(self, data):
-        print("herehereherehere")
-        print "GET code from:",data
         print data.split(' ')[1]
         code = int(data.split(' ')[1])
         return code
-
    
     # TODO: parse out headers from data
     def get_headers(self,data):
@@ -89,7 +86,7 @@ class HTTPClient(object):
 
         client = self.connect(hostname,parsedurl.port)
 
-        http_request = 'GET '+ url +' HTTP/1.0\r\n\r\n'
+        http_request = 'GET '+ url +' HTTP/1.1\r\n'
         http_request += 'Host:' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
         http_request += 'Connection: Close\r\n'
@@ -123,31 +120,31 @@ class HTTPClient(object):
             length = 0;
         else:
             origbody = urllib.urlencode(args)
-            length = len(body) 
+            length = len(origbody)
+        print "LENGTH IS:",length
 
         client = self.connect(hostname,parsedurl.port)
-
         # TODO: figure out args for POST
 
-        http_request = 'POST '+ url +' HTTP/1.0\r\n\r\n'
-        http_request += 'Host:' + hostname + '\r\n'
+        http_request = 'POST '+ url +' HTTP/1.1\r\n'
+        http_request += 'Host: ' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
         http_request += 'Content-Length: ' + str(length) +'\r\n'
-        http_request += 'Content-Type:application/x-www-form-urlencoded \r\n'
-        http_request += 'Connection: close\r\n'
-        # http_request += '\r\n'
-
-        if(length < 0): 
-            http_request += origbody
+        http_request += 'Content-Type: application/x-www-form-urlencoded\r\n'
+        # http_request += 'Connection: Close\r\n'
         http_request += '\r\n'
+
+        if(length > 0): 
+            http_request += origbody
+        # http_request += '\r\n\r\n'
         # TODO: Add other headers to http_request here
-     
+        print "HTTP-REQUEST", http_request     
         client.sendall(http_request)
-        # theoretically, these lines will work once the headers are right
+
         msg = self.recvall(client)
+        print "MSG:",msg,'\n'
         code = self.get_code(msg)
         body = self.get_body(msg)
-
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
