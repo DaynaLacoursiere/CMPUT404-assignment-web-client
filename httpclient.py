@@ -135,7 +135,7 @@ class HTTPClient(object):
         http_request += 'Content-Length: ' + str(length) +'\r\n'
         http_request += 'Content-Type:application/x-www-form-urlencoded \r\n'
         http_request += 'Connection: close\r\n'
-        http_request += '\r\n'
+        # http_request += '\r\n'
 
         if(length < 0): 
             http_request += origbody
