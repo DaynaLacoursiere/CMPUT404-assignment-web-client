@@ -45,10 +45,12 @@ class HTTPClient(object):
         return client
 
     def get_code(self, data):
+        print("herehereherehere")
         print "GET code from:",data
+        print data
         code = int(data.split(' ')[1])
-
         return code
+
    
     # TODO: parse out headers from data
     def get_headers(self,data):
@@ -103,6 +105,7 @@ class HTTPClient(object):
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
+        print("POSTS ARE STARTING NOW")
         code = 500
         body = ""
         # TODO: Add a try/except for invalid urls
@@ -133,8 +136,7 @@ class HTTPClient(object):
         msg = self.recvall(client)
         code = self.get_code(msg)
         body = self.get_body(msg)
-        #headers = self.get_headers(msg) 
-        print("THIS IS THE CODE 1:" + code)
+
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
