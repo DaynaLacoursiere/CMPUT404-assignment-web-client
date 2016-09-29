@@ -48,28 +48,11 @@ class HTTPClient(object):
     # TODO: parse out the http code from data
     def get_code(self, data):
         print "GET code from:",data
-        code = data.split(' ')[1]
+        code = int(data.split(' ')[1])
         return code
    
     # TODO: parse out headers from data
     def get_headers(self,data):
-        # print "GET headers from:"
-        # print data
-        # print "That was data"
-
-        # splitdata = data.split ('\r\n\r\n')
-
-        # for data in splitdata: 
-        #     print (data +'\n')
-        # #directory = splitdata[]
-        # #hostname = 
-        # header = "GET" + directory +'HTTP/1.1\r\n' +'Host: '+ hostname +'\r\n'
-        # header += 'Accept: */*\r\n' +'Connection: close\r\n'+'\r\n'
-
-        # # directory = 
-        # # hostname = 
-
-        # header = data.split ("\r\n\r\n",1)[0]
         return None
 
     # TODO: parse out the body from data
@@ -116,17 +99,14 @@ class HTTPClient(object):
         http_request += 'Host:' + hostname
         http_request += 'Accept: */*\r\n'
         http_request += '\r\n'
-        # TODO: Add other headers to http_request here
         http_request += '\r\n'
 
 
-        client.sendall(http_request)
+        client.send(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
         code = self.get_code(msg)
         body = self.get_body(msg)
-        headers = self.get_headers(msg) 
-
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
@@ -153,15 +133,16 @@ class HTTPClient(object):
         http_request += 'Host:' + hostname
         http_request += 'Accept: */*\r\n'
         http_request += '\r\n'
+        http_request += '\r\n'
         # TODO: Add other headers to http_request here
      
         client.sendall(http_request)
         # theoretically, these lines will work once the headers are right
         msg = self.recvall(client)
-        #code = self.get_code(msg)
-        #body = self.get_body(msg)
+        code = self.get_code(msg)
+        body = self.get_body(msg)
         #headers = self.get_headers(msg) 
-
+        print("THIS IS THE CODE 1:" + code)
         return HTTPResponse(code, body)
 
     def command(self, url, command="GET", args=None):
