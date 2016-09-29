@@ -47,7 +47,7 @@ class HTTPClient(object):
     def get_code(self, data):
         print("herehereherehere")
         print "GET code from:",data
-        print data
+        print data.split(' ')[1]
         code = int(data.split(' ')[1])
         return code
 
@@ -119,6 +119,11 @@ class HTTPClient(object):
             # case: www.google.ca
             hostname = parsedurl.path
 
+        if(args == None):
+            length = 0;
+        else:
+            origbody = urllib.urlencode(args)
+            length = len(body) 
 
         client = self.connect(hostname,parsedurl.port)
 
@@ -127,7 +132,13 @@ class HTTPClient(object):
         http_request = 'POST '+ url +' HTTP/1.0\r\n\r\n'
         http_request += 'Host:' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
+        http_request += 'Content-Length: ' + str(length) +'\r\n'
+        http_request += 'Content-Type:application/x-www-form-urlencoded \r\n'
+        http_request += 'Connection: close\r\n'
         http_request += '\r\n'
+
+        if(length < 0): 
+            http_request += origbody
         http_request += '\r\n'
         # TODO: Add other headers to http_request here
      
@@ -153,6 +164,7 @@ if __name__ == "__main__":
         help()
         sys.exit(1)
     elif (len(sys.argv) == 3):
+        print ("ELIF ELIF ELIF")
         # if you run python httpclient.py POST/GET www.url.com
         print client.command( sys.argv[2], sys.argv[1] )
     elif (len(sys.argv) == 4):
@@ -174,5 +186,6 @@ if __name__ == "__main__":
         args = makeJSON(sys.argv[3])
         print client.command( sys.argv[2], sys.argv[1], args)
     else:
+        print("ELSE ELSE ELSE")
         # if you run python httpclient.py www.url.com
         print client.command( sys.argv[1] )  
