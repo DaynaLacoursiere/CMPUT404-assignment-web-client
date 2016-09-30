@@ -45,7 +45,6 @@ class HTTPClient(object):
         return client
 
     def get_code(self, data):
-        print data.split(' ')[1]
         code = int(data.split(' ')[1])
         return code
    
@@ -95,14 +94,14 @@ class HTTPClient(object):
 
 
         client.send(http_request)
-        # theoretically, these lines will work once the headers are right
+
         msg = self.recvall(client)
+        print msg
         code = self.get_code(msg)
         body = self.get_body(msg)
         return HTTPResponse(code, body)
 
     def POST(self, url, args=None):
-        print("POSTS ARE STARTING NOW")
         code = 500
         body = ""
         # TODO: Add a try/except for invalid urls
@@ -121,28 +120,23 @@ class HTTPClient(object):
         else:
             origbody = urllib.urlencode(args)
             length = len(origbody)
-        print "LENGTH IS:",length
 
         client = self.connect(hostname,parsedurl.port)
-        # TODO: figure out args for POST
 
         http_request = 'POST '+ url +' HTTP/1.1\r\n'
         http_request += 'Host: ' + hostname + '\r\n'
         http_request += 'Accept: */*\r\n'
         http_request += 'Content-Length: ' + str(length) +'\r\n'
         http_request += 'Content-Type: application/x-www-form-urlencoded\r\n'
-        # http_request += 'Connection: Close\r\n'
         http_request += '\r\n'
 
         if(length > 0): 
             http_request += origbody
-        # http_request += '\r\n\r\n'
-        # TODO: Add other headers to http_request here
-        print "HTTP-REQUEST", http_request     
+     
         client.sendall(http_request)
 
         msg = self.recvall(client)
-        print "MSG:",msg,'\n'
+        print msg
         code = self.get_code(msg)
         body = self.get_body(msg)
         return HTTPResponse(code, body)
@@ -161,10 +155,8 @@ if __name__ == "__main__":
         help()
         sys.exit(1)
     elif (len(sys.argv) == 3):
-        print ("ELIF ELIF ELIF")
         # if you run python httpclient.py POST/GET www.url.com
         print client.command( sys.argv[2], sys.argv[1] )
     else:
-        print("ELSE ELSE ELSE")
         # if you run python httpclient.py www.url.com
         print client.command( sys.argv[1] )  
